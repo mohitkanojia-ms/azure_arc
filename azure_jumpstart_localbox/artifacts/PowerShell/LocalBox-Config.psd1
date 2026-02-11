@@ -51,13 +51,13 @@
             IP          = "192.168.1.12/24"
             StorageAIP  = "10.71.1.10"
             StorageBIP  = "10.71.2.10"
-        },
-        @{
-            Hostname    = "AzLHOST2"
-            IP          = "192.168.1.13/24"
-            StorageAIP  = "10.71.1.11"
-            StorageBIP  = "10.71.2.11"
         }
+        # @{
+        #     Hostname    = "AzLHOST2"
+        #     IP          = "192.168.1.13/24"
+        #     StorageAIP  = "10.71.1.11"
+        #     StorageBIP  = "10.71.2.11"
+        # }
     )
 
     # SDN Lab Admin Password
