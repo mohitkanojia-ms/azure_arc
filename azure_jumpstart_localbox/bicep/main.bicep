@@ -14,7 +14,7 @@ param windowsAdminUsername string
 param windowsAdminPassword string
 
 @description('Name for your log analytics workspace')
-param logAnalyticsWorkspaceName string = 'LocalBox-Workspace'
+param logAnalyticsWorkspaceName string = 'Workspace-26feb'
 
 @description('Public DNS to use for the domain')
 param natDNS string = '8.8.8.8'
@@ -44,14 +44,16 @@ param autoUpgradeClusterResource bool = false
 param vmAutologon bool = true
 
 @description('Name of the NAT Gateway')
-param natGatewayName string = 'LocalBox-NatGateway'
+param natGatewayName string = 'NatGateway-26feb'
 
 @description('The size of the Virtual Machine')
 @allowed([
   'Standard_E32s_v5'
   'Standard_E32s_v6'
+  'Standard_E8s_v5'
+  'Standard_E8s_v6'
 ])
-param vmSize string = 'Standard_E32s_v6'
+param vmSize string = 'Standard_E8s_v5'
 
 @description('Option to enable spot pricing for the LocalBox Client VM')
 param enableAzureSpotPricing bool = false
@@ -62,7 +64,7 @@ param governResourceTags bool = true
 @description('Tags to be added to all resources')
 
 param tags object = {
-  Project: 'jumpstart_LocalBox'
+  Project: 'jumpstart_26feb'
 }
 
 @description('Region to register Azure Local instance in. This is the region where the Azure Local instance resources will be created. The region must be one of the supported Azure Local regions.')

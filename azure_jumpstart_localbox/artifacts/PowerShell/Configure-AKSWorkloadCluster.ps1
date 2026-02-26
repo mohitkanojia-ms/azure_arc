@@ -1,4 +1,4 @@
-#requires -Version 7.0
+# requires -Version 7.0
 
 $WarningPreference = "SilentlyContinue"
 $ErrorActionPreference = "Stop"
@@ -24,7 +24,7 @@ $subId = $env:subscriptionId
 $rg = $env:resourceGroup
 $tenantId = $env:tenantId
 $location = $env:azureLocation
-$lnetName = "localbox-aks-lnet-vlan110"
+$lnetName = "aks-lnet-vlanXX1-26feb"
 $customLocName = $LocalBoxConfig.rbCustomLocationName
 $customLocationID = (az customlocation show --resource-group $rg --name $customLocName --query id -o tsv)
 $switchName = '"ConvergedSwitch(compute_management)"'

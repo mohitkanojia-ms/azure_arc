@@ -26,7 +26,7 @@ param windowsAdminUsername string = 'arcdemo'
 param windowsAdminPassword string
 
 @description('Name for your log analytics workspace')
-param logAnalyticsWorkspaceName string = 'LocalBox-Workspace'
+param logAnalyticsWorkspaceName string = 'Workspace-26feb'
 
 @description('Public DNS to use for the domain')
 param natDNS string = '8.8.8.8'

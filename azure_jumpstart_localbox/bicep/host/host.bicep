@@ -1,12 +1,14 @@
 @description('The name of your Virtual Machine')
-param vmName string = 'LocalBox-SFF'
+param vmName string = 'SFF-26feb'
 
 @description('The size of the Virtual Machine')
 @allowed([
   'Standard_E32s_v5'
   'Standard_E32s_v6'
+  'Standard_E8s_v5'
+  'Standard_E8s_v6'
 ])
-param vmSize string = 'Standard_E32s_v5'
+param vmSize string = 'Standard_E8s_v5'
 
 @description('Username for the Virtual Machine')
 param windowsAdminUsername string = 'arcdemo'
@@ -87,7 +89,7 @@ param vmAutologon bool = false
 param enableAzureSpotPricing bool = false
 
 var encodedPassword = base64(windowsAdminPassword)
-var bastionName = 'LocalBox-Bastion'
+var bastionName = 'Bastion-26feb'
 var publicIpAddressName = deployBastion == false ? '${vmName}-PIP' : '${bastionName}-PIP'
 var networkInterfaceName = '${vmName}-NIC'
 var osDiskType = 'Premium_LRS'

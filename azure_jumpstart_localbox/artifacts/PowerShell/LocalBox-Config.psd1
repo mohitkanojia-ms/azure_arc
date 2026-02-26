@@ -71,19 +71,19 @@
     FabricSwitch                         = "vSwitch-Fabric"
     FabricNIC                            = "FABRIC"
     ClusterVSwitchName                   = "hciSwitch"
-    ClusterName                          = "localboxcluster"
+    ClusterName                          = "cluster-26feb"
     WACVMName                            = "AdminCenter"
     ClusterSharedVolumePath              = "C:\ClusterStorage\S2D_vDISK1"
     LCMDeployUsername                    = "LocalBoxDeployUser"
     LCMADOUName                          = "hcioudocs"
-    LCMDeploymentPrefix                  = "localbox"
+    LCMDeploymentPrefix                  = "26feb"
 
     # ProductKeys
     GUIProductKey                        = "WX4NM-KYWYW-QJJR4-XV3QB-6VM33"        # Product key for Windows Server 2019 (Desktop Experience) Datacenter Installation
 
     # SDN Lab Domain
-    SDNDomainFQDN                        = "jumpstart.local"                      # Limit name (not the .com) to 14 characters as the name will be used as the NetBIOS name.
-    DCName                               = "jumpstartdc"                          # Name of the domain controller virtual machine (limit to 14 characters)
+    SDNDomainFQDN                        = "26feb.local"                         # Limit name (not the .com) to 14 characters as the name will be used as the NetBIOS name.
+    DCName                               = "dc-26feb"                            # Name of the domain controller virtual machine (limit to 14 characters)
 
     # NAT Configuration
     natHostSubnet                        = "192.168.128.0/24"
@@ -159,8 +159,8 @@
     WACport                              = 443
 
     # AKS and Resource bridge variables
-    rbCustomLocationName                 = "jumpstart"
-    AKSworkloadClusterName               = "localbox-aks" # lowercase only
+    rbCustomLocationName                 = "customloc-26feb"
+    AKSworkloadClusterName               = "aks-26feb" # lowercase only
     AKSvnetname                          = "akshcivnet"
     AKSNodeStartIP                       = "10.10.0.101"
     AKSNodeEndIP                         = "10.10.0.199"

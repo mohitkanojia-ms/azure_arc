@@ -1,8 +1,8 @@
 @description('Name of the VNet')
-param virtualNetworkName string = 'LocalBox-VNet'
+param virtualNetworkName string = 'VNet-26feb'
 
 @description('Name of the subnet in the virtual network')
-param subnetName string = 'LocalBox-Subnet'
+param subnetName string = 'Subnet-26feb'
 
 @description('Azure Region to deploy the Log Analytics Workspace')
 param location string = resourceGroup().location
@@ -11,13 +11,13 @@ param location string = resourceGroup().location
 param deployBastion bool = false
 
 @description('Name of the NAT Gateway')
-param natGatewayName string = 'LocalBox-NatGateway'
+param natGatewayName string = 'NatGateway-26feb'
 
 @description('Name of the Network Security Group')
-param networkSecurityGroupName string = 'LocalBox-NSG'
+param networkSecurityGroupName string = 'NSG-26feb'
 
 @description('Name of the Bastion Network Security Group')
-param bastionNetworkSecurityGroupName string = 'LocalBox-Bastion-NSG'
+param bastionNetworkSecurityGroupName string = 'Bastion-NSG-26feb'
 
 param resourceTags object
 
@@ -25,7 +25,7 @@ var addressPrefix = '172.16.0.0/16'
 var subnetAddressPrefix = '172.16.1.0/24'
 var bastionSubnetName = 'AzureBastionSubnet'
 var bastionSubnetRef = '${arcVirtualNetwork.id}/subnets/${bastionSubnetName}'
-var bastionName = 'LocalBox-Bastion'
+var bastionName = 'Bastion-26feb'
 var bastionSubnetIpPrefix = '172.16.3.64/26'
 var bastionPublicIpAddressName = '${bastionName}-PIP'
 
