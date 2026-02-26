@@ -19,5 +19,5 @@ param vmSize = 'Standard_E8s_v5'
 param enableAzureSpotPricing = false
 param governResourceTags = true
 param tags = {
-  Project: 'jumpstart_SFF_26feb'
+  Project: 'jumpstart_ALocalInstance_26feb'
 }

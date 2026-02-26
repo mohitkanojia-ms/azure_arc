@@ -1,5 +1,5 @@
 @description('The name of your Virtual Machine')
-param vmName string = 'SFF-26feb'
+param vmName string = 'ALocalInstance-26feb'
 
 @description('The size of the Virtual Machine')
 @allowed([
