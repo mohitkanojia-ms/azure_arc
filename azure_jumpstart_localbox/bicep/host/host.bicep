@@ -8,7 +8,7 @@ param vmName string = 'ALocalInst26'
   'Standard_E8s_v5'
   'Standard_E8s_v6'
 ])
-param vmSize string = 'Standard_E8s_v5'
+param vmSize string = 'Standard_E8s_v6'
 
 @description('Username for the Virtual Machine')
 param windowsAdminUsername string = 'arcdemo'

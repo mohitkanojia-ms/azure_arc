@@ -9,12 +9,25 @@ $Env:LocalBoxDir = "C:\LocalBox"
 $LocalBoxConfig = Import-PowerShellDataFile -Path $Env:LocalBoxConfigFile
 Start-Transcript -Path "$($LocalBoxConfig.Paths.LogsDir)\Generate-ARM-Template.log"
 
+Import-Module Az.Accounts -ErrorAction SilentlyContinue
+Import-Module Az.ConnectedMachine -ErrorAction SilentlyContinue
+
+if ($null -ne $env:subscriptionId -and $null -ne $env:tenantId) {
+    try {
+        Connect-AzAccount -Identity -Tenant $env:tenantId -Subscription $env:subscriptionId -ErrorAction Stop | Out-Null
+        Set-AzContext -SubscriptionId $env:subscriptionId -TenantId $env:tenantId -ErrorAction SilentlyContinue | Out-Null
+    }
+    catch {
+        Write-Output "Managed identity Azure login failed in Generate-ARM-Template.ps1. Error: $($_.Exception.Message)"
+    }
+}
+
 # Add necessary role assignments
 # $ErrorActionPreference = "Continue"
 # New-AzRoleAssignment -ObjectId $env:spnProviderId -RoleDefinitionName "Azure Connected Machine Resource Manager" -ResourceGroup $env:resourceGroup -ErrorAction Continue
 # $ErrorActionPreference = "Stop"
 
-$arcNodes = Get-AzConnectedMachine -ResourceGroup $env:resourceGroup
+$arcNodes = Get-AzConnectedMachine -SubscriptionId $env:subscriptionId -ResourceGroupName $env:resourceGroup
 $arcNodeResourceIds = $arcNodes.Id | ConvertTo-Json -AsArray
 
 # foreach ($machine in $arcNodes) {

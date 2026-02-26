@@ -13,6 +13,17 @@ $azureLocation = $env:azureLocation
 $resourceGroup = $env:resourceGroup
 
 Import-Module Hyper-V
+Import-Module Az.Accounts -ErrorAction SilentlyContinue
+Import-Module Az.Resources -ErrorAction SilentlyContinue
+
+if ($null -ne $env:subscriptionId -and $null -ne $env:tenantId) {
+    try {
+        Connect-AzAccount -Identity -Tenant $env:tenantId -Subscription $env:subscriptionId -ErrorAction Stop | Out-Null
+    }
+    catch {
+        Write-Output "Managed identity Azure login failed in New-LocalBoxCluster.ps1. Error: $($_.Exception.Message)"
+    }
+}
 
 Update-AzDeploymentProgressTag -ProgressString 'Downloading nested VMs VHDX files' -ResourceGroupName $env:resourceGroup -ComputerName $env:computername
 
