@@ -17,9 +17,9 @@ az provider register --namespace Microsoft.Compute --wait
 # check for available capacity
 echo "Checking for available capacity in $AZURE_LOCATION region..."
 
-sku="Standard_E32s_v5"
-family="standardESv5Family"
-minCores=32 # 32 vCPUs required for standard deployment with E32s v5
+sku="Standard_E8s_v6"
+family="standardESv6Family"
+minCores=8 # 8 vCPUs required for constrained deployment with E8 sizes
 available=$(az vm list-skus --location $AZURE_LOCATION --all --query "[?family=='$family'].capabilities[0][?name=='vCPUs'].value" -o tsv)
 
 if [[ $available -lt $minCores ]]; then

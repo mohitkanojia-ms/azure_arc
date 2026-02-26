@@ -58,7 +58,7 @@ var templateBaseUrl = 'https://raw.githubusercontent.com/${githubAccount}/azure_
 targetScope = 'subscription'
 
 resource rg 'Microsoft.Resources/resourceGroups@2020-06-01' = {
-  name: '${envName}-rg'
+  name: 'ALocalInstance-RG'
   location: location
 }
 

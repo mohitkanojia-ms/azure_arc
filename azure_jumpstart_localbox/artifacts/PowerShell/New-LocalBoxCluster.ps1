@@ -116,6 +116,19 @@ foreach ($VM in $LocalBoxConfig.NodeHostConfig) {
     Set-AzLocalNodeVhdx -HostName $VM.Hostname -IPAddress $VM.IP -VMMac $mac  -LocalBoxConfig $LocalBoxConfig
 }
 
+# Apply lower processor counts for constrained host SKUs
+$mgmtProcCount = if ($null -ne $LocalBoxConfig.AzSMGMTProcCount) { [int]$LocalBoxConfig.AzSMGMTProcCount } else { 4 }
+$mgmtMemory = if ($null -ne $LocalBoxConfig.AzSMGMTMemoryinGB) { $LocalBoxConfig.AzSMGMTMemoryinGB } else { 12GB }
+$nodeMemory = if ($null -ne $LocalBoxConfig.AzLocalNodeMemoryinGB) { $LocalBoxConfig.AzLocalNodeMemoryinGB } else { $LocalBoxConfig.NestedVMMemoryinGB }
+$nodeProcCount = if ($null -ne $LocalBoxConfig.AzLocalNodeProcCount) { [int]$LocalBoxConfig.AzLocalNodeProcCount } else { 3 }
+
+Set-VMProcessor -VMName $LocalBoxConfig.MgmtHostConfig.Hostname -Count $mgmtProcCount
+Set-VMMemory -VMName $LocalBoxConfig.MgmtHostConfig.Hostname -DynamicMemoryEnabled $false -StartupBytes $mgmtMemory
+foreach ($VM in $LocalBoxConfig.NodeHostConfig) {
+    Set-VMProcessor -VMName $VM.Hostname -Count $nodeProcCount
+    Set-VMMemory -VMName $VM.Hostname -DynamicMemoryEnabled $false -StartupBytes $nodeMemory
+}
+
 # Start Virtual Machines
 Write-Host "[Build cluster - Step 5/11] Starting VMs..." -ForegroundColor Green
 Write-Host "Starting VM: $($LocalBoxConfig.MgmtHostConfig.Hostname)"

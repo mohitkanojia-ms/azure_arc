@@ -41,19 +41,19 @@
     AzLocalVHDXPath    = "C:\LocalBox\VHD\AzL-node.vhdx"           # This value controls the location of the Azure Local VHDX. \
 
     MgmtHostConfig = @{
-        Hostname = "AzLMGMT"
+        Hostname = "AzLMGMT-dc"
         IP       = "192.168.1.11/24"
     }
 
     NodeHostConfig = @(
         @{
-            Hostname    = "AzLHOST1"
+            Hostname    = "AzLHOST1-dc"
             IP          = "192.168.1.12/24"
             StorageAIP  = "10.71.1.10"
             StorageBIP  = "10.71.2.10"
         }
         # @{
-        #     Hostname    = "AzLHOST2"
+        #     Hostname    = "AzLHOST2-dc"
         #     IP          = "192.168.1.13/24"
         #     StorageAIP  = "10.71.1.11"
         #     StorageBIP  = "10.71.2.11"
@@ -64,9 +64,11 @@
     SDNAdminPassword                     = '%staging-password%'                  # Do not change - this value is replaced during Bootstrap with the password supplied in the ARM deployment
 
     # VM Configuration
-    NestedVMMemoryinGB                   = 96GB                                 # This value controls the amount of RAM for each Nested Hyper-V Host (AzSHOST1-2).
-    AzSMGMTMemoryinGB                    = 28GB                                  # This value controls the amount of RAM for the AzSMGMT Nested VM which contains only the Console, Router, Admincenter, and DC VMs.
-    AzSMGMTProcCount                     = 20
+    NestedVMMemoryinGB                   = 24GB                                  # Reduced memory profile for each Azure Local nested host VM.
+    AzSMGMTMemoryinGB                    = 12GB                                  # Reduced memory profile for the AzSMGMT nested VM.
+    AzSMGMTProcCount                     = 4
+    AzLocalNodeMemoryinGB                = 24GB
+    AzLocalNodeProcCount                 = 3
     InternalSwitch                       = "InternalSwitch"                      # Name of internal switch that the LocalBox VMs will use in Single Host mode.
     FabricSwitch                         = "vSwitch-Fabric"
     FabricNIC                            = "FABRIC"
