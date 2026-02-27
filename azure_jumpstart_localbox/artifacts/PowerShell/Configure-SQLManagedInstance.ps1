@@ -61,9 +61,20 @@ if (-not (Test-Path -Path $cliDirPath)) {
   }
 }
 
-Write-Header "Az CLI Login"
-az login --use-device-code
-az account set -s $env:subscriptionId
+Write-Header "Az CLI Login (non-interactive)"
+$azContext = az account show --output json --only-show-errors 2>$null | ConvertFrom-Json
+if (-not $azContext) {
+  Write-Host "No active Azure CLI session found. Attempting managed identity login..."
+  az login --identity --allow-no-subscriptions --only-show-errors | Out-Null
+  if ($LASTEXITCODE -ne 0) {
+    throw "Non-interactive Azure CLI login failed. Managed identity is unavailable or lacks permissions."
+  }
+}
+
+az account set -s $env:subscriptionId --only-show-errors
+if ($LASTEXITCODE -ne 0) {
+  throw "Failed to set Azure CLI subscription context to '$($env:subscriptionId)'."
+}
 
 # Before create SQL MI, make sure k8s has 3 nodes with right size Standard_D8s_v3
 # Check the current node count in the AKS node pool

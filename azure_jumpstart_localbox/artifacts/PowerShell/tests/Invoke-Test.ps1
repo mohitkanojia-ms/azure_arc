@@ -3,6 +3,27 @@
 # Import Configuration data file
 $LocalBoxConfig = Import-PowerShellDataFile -Path $Env:LocalBoxConfigFile
 
+# Best-effort install/import of Azure PowerShell modules used by this script
+$requiredModules = @("Az.Accounts", "Az.Resources", "Az.ConnectedMachine", "Az.StackHCI")
+foreach ($moduleName in $requiredModules) {
+    if (-not (Get-Module -ListAvailable -Name $moduleName)) {
+        try {
+            Install-Module -Name $moduleName -Scope AllUsers -Force -AllowClobber -ErrorAction SilentlyContinue | Out-Null
+            Write-Output "Module installation attempted: $moduleName"
+        }
+        catch {
+            Write-Output "Module installation skipped/failed for $moduleName. Continuing..."
+        }
+    }
+
+    try {
+        Import-Module $moduleName -ErrorAction SilentlyContinue
+    }
+    catch {
+        Write-Output "Module import skipped/failed for $moduleName. Continuing..."
+    }
+}
+
 function Wait-AzDeployment {
     param(
         [Parameter(Mandatory = $true)]

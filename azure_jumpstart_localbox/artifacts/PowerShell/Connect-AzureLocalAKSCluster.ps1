@@ -40,8 +40,16 @@ $customLocName   = $LocalBoxConfig.rbCustomLocationName     # e.g. "customloc-26
 # 1. Authenticate
 # -----------------------------------------------------------------------
 Write-Host "[Step 1/5] Authenticating to Azure..." -ForegroundColor Cyan
-az login --identity
-az account set --subscription $subId
+az login --identity --allow-no-subscriptions --only-show-errors | Out-Null
+if ($LASTEXITCODE -ne 0) {
+    throw "Non-interactive Azure CLI login failed. Managed identity is unavailable or lacks permissions."
+}
+
+az account set --subscription $subId --only-show-errors
+if ($LASTEXITCODE -ne 0) {
+    throw "Failed to set Azure CLI subscription context to '$subId'."
+}
+
 az config set extension.use_dynamic_install=yes_without_prompt | Out-Null
 
 # -----------------------------------------------------------------------

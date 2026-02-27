@@ -14,7 +14,16 @@ $Env:LocalBoxDir = "C:\LocalBox"
 $LocalBoxConfig = Import-PowerShellDataFile -Path $Env:LocalBoxConfigFile
 Start-Transcript -Path "$($LocalBoxConfig.Paths.LogsDir)\Configure-AKSWorkloadCluster.log"
 
-az login --identity
+az login --identity --allow-no-subscriptions --only-show-errors | Out-Null
+if ($LASTEXITCODE -ne 0) {
+	throw "Non-interactive Azure CLI login failed. Managed identity is unavailable or lacks permissions."
+}
+
+az account set --subscription $env:subscriptionId --only-show-errors
+if ($LASTEXITCODE -ne 0) {
+	throw "Failed to set Azure CLI subscription context to '$($env:subscriptionId)'."
+}
+
 az config set extension.use_dynamic_install=yes_without_prompt | Out-Null
 az extension add --name customlocation
 az extension add --name stack-hci-vm

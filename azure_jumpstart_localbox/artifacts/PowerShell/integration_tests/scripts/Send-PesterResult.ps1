@@ -6,6 +6,27 @@ Start-Transcript -Path "$Env:LocalBoxLogsDir\Get-PesterResult_$($PID).log" -Forc
 
 Write-Output "Get-PesterResult.ps1 started in $(hostname.exe) as user $(whoami.exe) at $(Get-Date)"
 
+# Best-effort install/import of Azure PowerShell modules used by this script
+$requiredModules = @("Az.Accounts", "Az.Resources", "Az.ConnectedMachine", "Az.StackHCI")
+foreach ($moduleName in $requiredModules) {
+    if (-not (Get-Module -ListAvailable -Name $moduleName)) {
+        try {
+            Install-Module -Name $moduleName -Scope AllUsers -Force -AllowClobber -ErrorAction SilentlyContinue | Out-Null
+            Write-Output "Module installation attempted: $moduleName"
+        }
+        catch {
+            Write-Output "Module installation skipped/failed for $moduleName. Continuing..."
+        }
+    }
+
+    try {
+        Import-Module $moduleName -ErrorAction SilentlyContinue
+    }
+    catch {
+        Write-Output "Module import skipped/failed for $moduleName. Continuing..."
+    }
+}
+
 $timeout = New-TimeSpan -Minutes 180
 $endTime = (Get-Date).Add($timeout)
 
@@ -53,8 +74,15 @@ $newPath = 'C:\Program Files\Microsoft SDKs\Azure\CLI2\wbin'
 $env:Path = $currentPath + ';' + $newPath
 
 Write-Output 'Az CLI Login'
-az login --identity
-az account set -s $env:subscriptionId
+az login --identity --allow-no-subscriptions --only-show-errors | Out-Null
+if ($LASTEXITCODE -ne 0) {
+    throw "Non-interactive Azure CLI login failed. Managed identity is unavailable or lacks permissions."
+}
+
+az account set -s $env:subscriptionId --only-show-errors
+if ($LASTEXITCODE -ne 0) {
+    throw "Failed to set Azure CLI subscription context to '$($env:subscriptionId)'."
+}
 
 $MetaData = (Invoke-RestMethod -Headers @{Metadata="true"} -Method GET -Uri "http://169.254.169.254/metadata/instance?api-version=2021-02-01").compute
 

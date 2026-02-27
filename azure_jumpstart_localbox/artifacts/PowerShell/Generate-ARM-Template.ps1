@@ -9,8 +9,26 @@ $Env:LocalBoxDir = "C:\LocalBox"
 $LocalBoxConfig = Import-PowerShellDataFile -Path $Env:LocalBoxConfigFile
 Start-Transcript -Path "$($LocalBoxConfig.Paths.LogsDir)\Generate-ARM-Template.log"
 
-Import-Module Az.Accounts -ErrorAction SilentlyContinue
-Import-Module Az.ConnectedMachine -ErrorAction SilentlyContinue
+# Best-effort install/import of Azure PowerShell modules used by this script
+$requiredModules = @("Az.Accounts", "Az.Resources", "Az.ConnectedMachine", "Az.StackHCI")
+foreach ($moduleName in $requiredModules) {
+    if (-not (Get-Module -ListAvailable -Name $moduleName)) {
+        try {
+            Install-Module -Name $moduleName -Scope AllUsers -Force -AllowClobber -ErrorAction SilentlyContinue | Out-Null
+            Write-Output "Module installation attempted: $moduleName"
+        }
+        catch {
+            Write-Output "Module installation skipped/failed for $moduleName. Continuing..."
+        }
+    }
+
+    try {
+        Import-Module $moduleName -ErrorAction SilentlyContinue
+    }
+    catch {
+        Write-Output "Module import skipped/failed for $moduleName. Continuing..."
+    }
+}
 
 if ($null -ne $env:subscriptionId -and $null -ne $env:tenantId) {
     try {

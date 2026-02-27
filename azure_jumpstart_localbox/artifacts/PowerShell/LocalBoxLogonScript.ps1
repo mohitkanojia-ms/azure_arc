@@ -11,6 +11,38 @@ $LocalBoxConfig = Import-PowerShellDataFile -Path $Env:LocalBoxConfigFile
 
 Start-Transcript -Path "$($LocalBoxConfig.Paths.LogsDir)\LocalBoxLogonScript.log"
 
+# Best-effort install/import of Azure PowerShell modules used by downstream scripts
+$requiredModules = @("Az.Accounts", "Az.Resources", "Az.ConnectedMachine", "Az.StackHCI")
+foreach ($moduleName in $requiredModules) {
+    if (-not (Get-Module -ListAvailable -Name $moduleName)) {
+        try {
+            Install-Module -Name $moduleName -Scope AllUsers -Force -AllowClobber -ErrorAction SilentlyContinue | Out-Null
+            Write-Output "Module installation attempted: $moduleName"
+        }
+        catch {
+            Write-Output "Module installation skipped/failed for $moduleName. Continuing..."
+        }
+    }
+
+    try {
+        Import-Module $moduleName -ErrorAction SilentlyContinue
+    }
+    catch {
+        Write-Output "Module import skipped/failed for $moduleName. Continuing..."
+    }
+}
+
+# Validate non-interactive Azure CLI login early
+az login --identity --allow-no-subscriptions --only-show-errors | Out-Null
+if ($LASTEXITCODE -ne 0) {
+    throw "Non-interactive Azure CLI login failed at startup. Managed identity is unavailable or lacks permissions."
+}
+
+az account set --subscription $Env:subscriptionId --only-show-errors
+if ($LASTEXITCODE -ne 0) {
+    throw "Failed to set Azure CLI subscription context to '$($Env:subscriptionId)' at startup."
+}
+
 # Login to Azure PowerShell
 Connect-AzAccount -Identity -Tenant $Env:tenantId -Subscription $Env:subscriptionId
 

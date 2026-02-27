@@ -10,24 +10,24 @@ if (-not (Get-Command -Name Get-AzContext)) {
     Install-Module -Name Az -AllowClobber -Scope CurrentUser -ErrorAction Stop
 }
 
-# If not signed in, run the Connect-AzAccount cmdlet
-if (-not (Get-AzContext)) {
-    Write-Host "Logging in to Azure with subscription id $env:AZURE_SUBSCRIPTION_ID"
-    If (-not (Connect-AzAccount -SubscriptionId $env:AZURE_SUBSCRIPTION_ID -ErrorAction Stop)){
-        Throw "Unable to login to Azure. Please check your credentials and try again."
-    }
+# Strict non-interactive mode: require an existing Az PowerShell session.
+$psContext = Get-AzContext
+if (-not $psContext) {
+    Throw "No Azure PowerShell context found. Non-interactive mode is enabled. Authenticate before running preprovision using managed identity or service principal."
 }
-$tenantId = (Get-AzContext).tenant.id
+
+$tenantId = $psContext.tenant.id
 Write-Host "Setting Azure context with subscription id $env:AZURE_SUBSCRIPTION_ID and tenant id $tenantId..."
 $context = Set-AzContext -SubscriptionId $env:AZURE_SUBSCRIPTION_ID -ErrorAction Stop
 
 # Check if Azure CLI is authenticated to the same tenant as Azure PowerShell
-$azCliTenantId = (az account show --query "tenantId" -o tsv) 2>&1
+$azCliTenantId = az account show --query "tenantId" -o tsv --only-show-errors 2>$null
+if (-not $azCliTenantId) {
+    Throw "Azure CLI is not authenticated. Non-interactive mode is enabled. Authenticate Azure CLI before running preprovision."
+}
+
 if ($azCliTenantId -ne $tenantId) {
-    Write-Host "Azure CLI is not authenticated to the same tenant as Azure PowerShell - performing login..."
-
-    az login --tenant $tenantId
-
+    Throw "Azure CLI tenant '$azCliTenantId' does not match Azure PowerShell tenant '$tenantId'. Non-interactive mode is enabled; switch context outside this script and re-run."
 }
 
 Write-Host "Setting Azure CLI context to the same subscription as Azure PowerShell..."
